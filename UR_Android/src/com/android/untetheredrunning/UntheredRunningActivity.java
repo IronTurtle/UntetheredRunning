@@ -1,5 +1,6 @@
 package com.android.untetheredrunning;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +21,13 @@ import org.opencv.imgproc.Imgproc;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -92,6 +95,11 @@ public class UntheredRunningActivity extends Activity {
              MatOfKeyPoint CamKeypoints = new MatOfKeyPoint();
              MatOfKeyPoint LogoKeypoints = new MatOfKeyPoint();
              List<MatOfDMatch> matches = new ArrayList<MatOfDMatch>();
+             
+             //Get logo/initial image to compare to
+             File rootsd = Environment.getExternalStorageDirectory();
+             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
+             Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
         
              //Configure bitmap pixels
              Bitmap mBitmap1 = thumbnail.copy(Bitmap.Config.ARGB_8888, false); 
@@ -102,11 +110,7 @@ public class UntheredRunningActivity extends Activity {
       		 Utils.bitmapToMat(mBitmap2, IconImage);
       		
       		 Mat o_image1 = new Mat(); //parameters to cover mat to bitmap
-     		 //Mat o_image2 = new Mat();
-     		 //Mat o_image3 = new Mat();
-      		 
-      		
-     		 
+      		     		 
       		 Mat rgb1 = new Mat();
          	 Mat rgb2 = new Mat();
       	     Mat rgb3 = new Mat(); //createBitmap holder with o_image specs
