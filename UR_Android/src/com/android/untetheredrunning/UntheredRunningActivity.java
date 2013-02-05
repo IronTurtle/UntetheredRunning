@@ -98,16 +98,17 @@ public class UntheredRunningActivity extends Activity {
              
              //Get logo/initial image to compare to
              File rootsd = Environment.getExternalStorageDirectory();
+             
+             //***File cannot fit Mat formatting, need picture taken or smaller pic... not sure
              //File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
-             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130204_232748.jpg");
+             //***different file for testing purposes, delete later
+             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130204_232748.jpg"); 
+             
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
              
-             Log.i(TAG, "Thumbnail width:" + thumbnail.getWidth() + " height:" + thumbnail.getHeight());
+             //converts to grayscale based on captured picture's width & height (change later)
              logo = toGrayscale(logo, thumbnail.getWidth(), thumbnail.getHeight());
-             //imgTakenPhoto.setImageBitmap(thumbnail);
-             //Log.i(TAG, "Logo width:" + logo.getWidth() + " height:" + logo.getHeight());
-             //imgTakenPhoto.setImageBitmap(logo);
-             
+
              
              //Configure bitmap pixels
              Bitmap mBitmap1 = thumbnail.copy(Bitmap.Config.ARGB_8888, false); 
@@ -129,7 +130,7 @@ public class UntheredRunningActivity extends Activity {
       		 Scalar color2 = new Scalar(255,0,0);
       		 
              FeatureDetector FAST = FeatureDetector.create(FeatureDetector.FAST);
-
+             
              // extract keypoints
              FAST.detect(CamImage, CamKeypoints);
              FAST.detect(IconImage, LogoKeypoints);
