@@ -98,13 +98,22 @@ public class UntheredRunningActivity extends Activity {
              
              //Get logo/initial image to compare to
              File rootsd = Environment.getExternalStorageDirectory();
-             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
+             //File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
+             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130204_232748.jpg");
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
-        
+             
+             Log.i(TAG, "Thumbnail width:" + thumbnail.getWidth() + " height:" + thumbnail.getHeight());
+             logo = toGrayscale(logo, thumbnail.getWidth(), thumbnail.getHeight());
+             //imgTakenPhoto.setImageBitmap(thumbnail);
+             //Log.i(TAG, "Logo width:" + logo.getWidth() + " height:" + logo.getHeight());
+             //imgTakenPhoto.setImageBitmap(logo);
+             
+             
              //Configure bitmap pixels
              Bitmap mBitmap1 = thumbnail.copy(Bitmap.Config.ARGB_8888, false); 
-             Bitmap mBitmap2 = thumbnail.copy(Bitmap.Config.ARGB_8888, false);
+             Bitmap mBitmap2 = logo.copy(Bitmap.Config.ARGB_8888, false);
              
+            
              //Convert bitmap to mat
              Utils.bitmapToMat(mBitmap1, CamImage);
       		 Utils.bitmapToMat(mBitmap2, IconImage);
@@ -138,7 +147,8 @@ public class UntheredRunningActivity extends Activity {
              extracter.compute(rgb2, LogoKeypoints, LogoDescriptors);
              
              DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
-             matcher.radiusMatch(CamDescriptors, LogoDescriptors, matches, 100.0f);
+             //imgTakenPhoto.setImageBitmap(mBitmap2);
+             matcher.radiusMatch(CamDescriptors, LogoDescriptors, matches, 1000.0f);
              Features2d.drawMatches2(rgb1, CamKeypoints, rgb2, LogoKeypoints, matches, rgb3);
              
              Imgproc.cvtColor(rgb3, o_image1, Imgproc.COLOR_RGB2RGBA);
@@ -168,6 +178,20 @@ public class UntheredRunningActivity extends Activity {
         return bmpGrayscale;
     }
 
+    public Bitmap toGrayscale(Bitmap bmpOriginal,int setWidth,int setHeight)
+    {  
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(setWidth, setHeight, Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
+    }
+    
     class btnTakePhotoClicker implements Button.OnClickListener
     {
         @Override
