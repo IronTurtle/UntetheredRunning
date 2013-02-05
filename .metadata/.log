@@ -189,3 +189,32 @@ org.eclipse.osgi.framework.internal.core.AbstractBundle$BundleStatusException
 
 !ENTRY com.android.ide.eclipse.adt 4 0 2013-02-04 16:34:33.912
 !MESSAGE Failed to load properties file for project 'UR_Android'
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2013-02-04 16:50:23.088
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/MyCamera/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1306)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2013-02-04 16:50:23.089
+!MESSAGE Resource '/MyCamera/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2013-02-04 17:02:38.591
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/OpenCV Library - 2.4.3/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:341)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:215)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1306)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2013-02-04 17:02:38.592
+!MESSAGE Resource '/OpenCV Library - 2.4.3/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2013-02-04 17:02:38.765
+!MESSAGE fileChanged: failed to find manifest package for project OpenCV Library - 2.4.3

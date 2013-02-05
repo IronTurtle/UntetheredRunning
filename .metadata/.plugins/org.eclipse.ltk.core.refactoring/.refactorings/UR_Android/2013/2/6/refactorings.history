@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;UR_Android/res/layout/activity_unthered_running.xml&apos; to &apos;activity_untethered_running.xml&apos;" description="Rename resource &apos;activity_unthered_running.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="res/layout/activity_unthered_running.xml" name="activity_untethered_running.xml" stamp="1360026307843" updateReferences="true"/>
+</session>
