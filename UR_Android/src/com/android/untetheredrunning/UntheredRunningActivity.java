@@ -100,10 +100,6 @@ public class UntheredRunningActivity extends Activity {
              //Get logo/initial image to compare to
              File rootsd = Environment.getExternalStorageDirectory();
              
-             //***File cannot fit Mat formatting, need picture taken or smaller pic... not sure
-             //File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
-             //***different file for testing purposes, delete later
-<<<<<<< HEAD
              File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130205_171648.jpg"); 
              
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
