@@ -14,8 +14,8 @@
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
         android:layout_below="@+id/button1"
-        android:scaleType="centerCrop" />
-       
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitCenter" />
+
 </RelativeLayout>

@@ -88,13 +88,15 @@ public class UntheredRunningActivity extends Activity {
              Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
              //Convert to grayscale
              thumbnail = toGrayscale(thumbnail);
+             //thumbnail = toGrayscale(thumbnail,80,60);
              Mat CamImage = new Mat();
-             Mat IconImage = new Mat();
+             Mat LogoImage = new Mat();
              Mat CamDescriptors = new Mat();
              Mat LogoDescriptors = new Mat();
              MatOfKeyPoint CamKeypoints = new MatOfKeyPoint();
              MatOfKeyPoint LogoKeypoints = new MatOfKeyPoint();
              List<MatOfDMatch> matches = new ArrayList<MatOfDMatch>();
+             //MatOfDMatch matches = new MatOfDMatch();
              
              //Get logo/initial image to compare to
              File rootsd = Environment.getExternalStorageDirectory();
@@ -102,12 +104,13 @@ public class UntheredRunningActivity extends Activity {
              //***File cannot fit Mat formatting, need picture taken or smaller pic... not sure
              //File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
              //***different file for testing purposes, delete later
-             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130204_232748.jpg"); 
+             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130205_171648.jpg"); 
+             //Log.i(TAG, "Thumbnail width: " + thumbnail.getWidth() + " height: " + thumbnail.getHeight());
              
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
              
              //converts to grayscale based on captured picture's width & height (change later)
-             logo = toGrayscale(logo, thumbnail.getWidth(), thumbnail.getHeight());
+             logo = toGrayscale(logo);
 
              
              //Configure bitmap pixels
@@ -117,30 +120,29 @@ public class UntheredRunningActivity extends Activity {
             
              //Convert bitmap to mat
              Utils.bitmapToMat(mBitmap1, CamImage);
-      		 Utils.bitmapToMat(mBitmap2, IconImage);
+      		 Utils.bitmapToMat(mBitmap2, LogoImage);
       		
-      		 Mat o_image1 = new Mat(); //parameters to cover mat to bitmap
+      		 Mat o_image1 = new Mat();
       		     		 
       		 Mat rgb1 = new Mat();
          	 Mat rgb2 = new Mat();
-      	     Mat rgb3 = new Mat(); //createBitmap holder with o_image specs
-      		 //Mat temp = new Mat();
+      	     Mat rgb3 = new Mat();
       		 
          	 //Color for circles
-      		 Scalar color2 = new Scalar(255,0,0);
+      		 //Scalar color2 = new Scalar(255,0,0);
       		 
              FeatureDetector FAST = FeatureDetector.create(FeatureDetector.FAST);
              
              // extract keypoints
+             FAST.detect(LogoImage, LogoKeypoints);
              FAST.detect(CamImage, CamKeypoints);
-             FAST.detect(IconImage, LogoKeypoints);
              
              //Color space conversion
              Imgproc.cvtColor(CamImage, rgb1, Imgproc.COLOR_RGBA2RGB);
-             Imgproc.cvtColor(IconImage, rgb2, Imgproc.COLOR_RGBA2RGB);
+             Imgproc.cvtColor(LogoImage, rgb2, Imgproc.COLOR_RGBA2RGB);
              
-             Features2d.drawKeypoints(rgb1, CamKeypoints, rgb1, color2, 0);
-             Features2d.drawKeypoints(rgb2, LogoKeypoints, rgb2, color2, 0);
+             //Features2d.drawKeypoints(rgb1, CamKeypoints, rgb1, color2, 0);
+             //Features2d.drawKeypoints(rgb2, LogoKeypoints, rgb2, color2, 0);
              
              DescriptorExtractor extracter = DescriptorExtractor.create(DescriptorExtractor.FREAK);
              
@@ -149,7 +151,9 @@ public class UntheredRunningActivity extends Activity {
              
              DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
              //imgTakenPhoto.setImageBitmap(mBitmap2);
+             //matcher.match(CamDescriptors, LogoDescriptors, matches);
              matcher.radiusMatch(CamDescriptors, LogoDescriptors, matches, 1000.0f);
+             //if (!matches.isEmpty()) {
              Features2d.drawMatches2(rgb1, CamKeypoints, rgb2, LogoKeypoints, matches, rgb3);
              
              Imgproc.cvtColor(rgb3, o_image1, Imgproc.COLOR_RGB2RGBA);
@@ -157,7 +161,8 @@ public class UntheredRunningActivity extends Activity {
              Utils.matToBitmap(o_image1, bmp);
              
              imgTakenPhoto.setImageBitmap(bmp);
-             
+            
+             //}
           }
        }
     }
