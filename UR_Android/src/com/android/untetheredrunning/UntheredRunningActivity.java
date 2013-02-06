@@ -102,7 +102,7 @@ public class UntheredRunningActivity extends Activity {
              //***File cannot fit Mat formatting, need picture taken or smaller pic... not sure
              //File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
              //***different file for testing purposes, delete later
-             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130204_232748.jpg"); 
+             File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130205_155111.jpg"); 
              
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
              
