@@ -1,3 +1,6 @@
+#Eclipse junk
+.metadata*
+
 # Object files
 *.o
 

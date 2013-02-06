@@ -96,7 +96,6 @@ public class UntheredRunningActivity extends Activity {
              MatOfKeyPoint CamKeypoints = new MatOfKeyPoint();
              MatOfKeyPoint LogoKeypoints = new MatOfKeyPoint();
              List<MatOfDMatch> matches = new ArrayList<MatOfDMatch>();
-             //MatOfDMatch matches = new MatOfDMatch();
              
              //Get logo/initial image to compare to
              File rootsd = Environment.getExternalStorageDirectory();
@@ -104,8 +103,8 @@ public class UntheredRunningActivity extends Activity {
              //***File cannot fit Mat formatting, need picture taken or smaller pic... not sure
              //File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/Capstone_Team_Logo.png");
              //***different file for testing purposes, delete later
+<<<<<<< HEAD
              File dcim = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130205_171648.jpg"); 
-             //Log.i(TAG, "Thumbnail width: " + thumbnail.getWidth() + " height: " + thumbnail.getHeight());
              
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
              
