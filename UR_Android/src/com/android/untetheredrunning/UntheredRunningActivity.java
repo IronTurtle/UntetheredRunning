@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opencv.OpenCVTestCase;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -143,6 +144,7 @@ public class UntheredRunningActivity extends Activity {
       		 Utils.bitmapToMat(mBitmap2, LogoImage);
       		 
          	 //Color for circles
+      		 Scalar color1 = new Scalar(0, 255, 0);
       		 Scalar color2 = new Scalar(255,0,0);
       		
       		 //Imgproc.cvtColor(CamImage, rgb1, Imgproc.COLOR_RGBA2RGB);
@@ -198,8 +200,46 @@ public class UntheredRunningActivity extends Activity {
                 }
              }
              
+             List<Point> obj = new ArrayList<Point>();
+             List<Point> scene = new ArrayList<Point>();
+             List<KeyPoint> logoTemp = LogoKeypoints.toList();
+             List<KeyPoint> camTemp = CamKeypoints.toList();
+             for( int i = 0; i < good_matches.size(); i++ )
+             {
+               DMatch match = good_matches.get(i);
+               obj.add(logoTemp.get(match.trainIdx).pt);
+               scene.add(camTemp.get(match.queryIdx).pt);
+             }
+             
+             MatOfPoint2f objPoints = new MatOfPoint2f(obj.toArray(new Point[0]));
+             MatOfPoint2f scenePoints  = new MatOfPoint2f(scene.toArray(new Point[0]));
+             Mat hmg = Calib3d.findHomography(objPoints, scenePoints, Calib3d.RANSAC, 3);
+             //OpenCVTestCase.assertMatEqual(Mat.eye(3, 3, CvType.CV_64F), hmg, 0.001);
+             
+             List<Point> test = new ArrayList<Point>();
+             Point p0 = new Point(0, 0);
+             test.add(p0);
+             Point p1 = new Point(LogoImage.cols(), 0);
+             test.add(p1);
+             Point p2 = new Point(LogoImage.cols(), LogoImage.rows());
+             test.add(p2);
+             Point p3 = new Point(0, LogoImage.rows());
+             test.add(p3);
+             Mat srcPts = org.opencv.utils.Converters.vector_Point2f_to_Mat(test);
+             Mat dstPts = new Mat();
+             List<Point> dst = new ArrayList<Point>();
+             Core.perspectiveTransform(srcPts, dstPts, hmg);
+             org.opencv.utils.Converters.Mat_to_vector_Point(dstPts, dst);
              MatOfByte matchesMask = new MatOfByte();
              Features2d.drawMatches(rgb1, CamKeypoints, rgb2, LogoKeypoints, matching, rgb3, color2, color2, matchesMask, 2);
+             Point temp0 = new Point(dst.get(0).x + p1.x, dst.get(0).y + p1.y);
+             Point temp1 = new Point(dst.get(1).x + p1.x, dst.get(1).y + p1.y);
+             Point temp2 = new Point(dst.get(2).x + p1.x, dst.get(2).y + p1.y);
+             Point temp3 = new Point(dst.get(3).x + p1.x, dst.get(3).y + p1.y);
+             Core.line(rgb3, temp0, temp1, color1, 10);
+             Core.line(rgb3, temp1, temp2, color1, 10);
+             Core.line(rgb3, temp2, temp3, color1, 10);
+             Core.line(rgb3, temp3, temp0, color1, 10);
              
              Imgproc.cvtColor(rgb3, o_image1, Imgproc.COLOR_RGB2RGBA);
              Bitmap bmp = Bitmap.createBitmap(o_image1.cols(), o_image1.rows(), Bitmap.Config.ARGB_8888);
