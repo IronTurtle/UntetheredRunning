@@ -49,6 +49,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+/**
+ * 
+ * @author chai
+ *
+ */
 public class UntheredRunningActivity extends Activity {
     /** Called when the activity is first created. */
 
@@ -124,7 +129,7 @@ public class UntheredRunningActivity extends Activity {
              
              Bitmap logo = BitmapFactory.decodeFile(dcim.toString());
              
-             File check = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130220_185956.jpg"); 
+             File check = new File(rootsd.getAbsolutePath() + "/DCIM/Camera/IMG_20130220_185637.jpg"); 
              
              Bitmap pic2 = BitmapFactory.decodeFile(check.toString());
              
@@ -150,7 +155,7 @@ public class UntheredRunningActivity extends Activity {
       		 Scalar color1 = new Scalar(0, 255, 0);
       		 Scalar color2 = new Scalar(255,0,0);
       		
-             FeatureDetector detector = FeatureDetector.create(FeatureDetector.FAST);
+             FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
            
              // extract keypoints
              detector.detect(camImage, camKeypoints);
