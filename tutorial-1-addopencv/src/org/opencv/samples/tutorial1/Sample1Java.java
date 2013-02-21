@@ -3,8 +3,11 @@ package org.opencv.samples.tutorial1;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener;
@@ -16,7 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class Sample1Java extends Activity implements CvCameraViewListener {
@@ -27,6 +32,7 @@ public class Sample1Java extends Activity implements CvCameraViewListener {
     private MenuItem             mItemSwitchCamera = null;
     private Mat 				 mRgba;
     private Mat					 mGrayMat;
+    private Button 				 startStopBtn;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -57,17 +63,34 @@ public class Sample1Java extends Activity implements CvCameraViewListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.tutorial1_surface_view);
+        startStopBtn = (Button) findViewById(R.id.buttonStartStop);
+        startStopBtn.setText(R.string.START_APP_STRING);
         
         if (mIsJavaCamera)
             mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
         else
             mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_native_surface_view);
 
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setVisibility(SurfaceView.INVISIBLE);
+        
 
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
+    public void startStopAppOnClick(View view) {
+    	System.out.println(startStopBtn.getText()+" == "+
+				getResources().getString(R.string.START_APP_STRING)+"--->"+
+    			(startStopBtn.getText().toString()).equals(R.string.START_APP_STRING));
+    	if((startStopBtn.getText().toString()).equals(getResources().getString(R.string.START_APP_STRING))) {
+    		mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+    		startStopBtn.setText(R.string.STOP_APP_STRING);
+    	}
+    	else {
+    		mOpenCvCameraView.setVisibility(SurfaceView.INVISIBLE);
+    		startStopBtn.setText(R.string.START_APP_STRING);
+    	}
+    }
+    
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	super.onActivityResult(requestCode, resultCode, data);
     	
@@ -138,7 +161,12 @@ public class Sample1Java extends Activity implements CvCameraViewListener {
 
     public Mat onCameraFrame(Mat inputFrame) {
     	inputFrame.copyTo(mRgba);
-        Imgproc.cvtColor(mRgba, mGrayMat, Imgproc.COLOR_RGBA2GRAY);
+    	Point center = new Point(mRgba.width()/2,mRgba.height()/2);
+    	double angle = -90;
+    	double scale = 1.0;
+
+    	Mat mapMatrix = Imgproc.getRotationMatrix2D(center, angle, scale);
+    	Imgproc.warpAffine(mRgba, mGrayMat, mapMatrix, mRgba.size(), Imgproc.INTER_LINEAR);
         return mGrayMat;
     }
 }

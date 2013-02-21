@@ -23,11 +23,11 @@
         opencv:show_fps="true"
         opencv:camera_id="any" />
     <Button
-        android:id="@+id/buttonStart"
+        android:id="@+id/buttonStartStop"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:text="Start"
-        android:onClick="startAppOnClick" />
+        android:text="@string/START_APP_STRING"
+        android:onClick="startStopAppOnClick" />
 
 </LinearLayout>
