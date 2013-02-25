@@ -78,9 +78,6 @@ public class Sample1Java extends Activity implements CvCameraViewListener {
     }
 
     public void startStopAppOnClick(View view) {
-    	System.out.println(startStopBtn.getText()+" == "+
-				getResources().getString(R.string.START_APP_STRING)+"--->"+
-    			(startStopBtn.getText().toString()).equals(R.string.START_APP_STRING));
     	if((startStopBtn.getText().toString()).equals(getResources().getString(R.string.START_APP_STRING))) {
     		mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
     		startStopBtn.setText(R.string.STOP_APP_STRING);
