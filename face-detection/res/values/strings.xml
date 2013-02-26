@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OCV Face Detection</string>
+    <string name="START_APP_STRING">Start</string>
+    <string name="STOP_APP_STRING">Stop</string>
 </resources>

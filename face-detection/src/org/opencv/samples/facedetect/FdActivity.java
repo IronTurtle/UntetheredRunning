@@ -21,11 +21,18 @@ import org.opencv.objdetect.CascadeClassifier;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class FdActivity extends Activity implements CvCameraViewListener {
 
@@ -53,6 +60,20 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     private int                    mAbsoluteFaceSize   = 0;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
+    
+
+	private Button 				   startStopBtn;
+    
+    //Msg types that get sent back to the UI from the separate thread Handler
+  	public static final int STATUS_NOT_CONNECTED = 0;
+  	public static final int STATUS_CONNECTED = 1;
+  	
+  	//key to be used by the handler
+  	public static final String STATUS_TEXT = "statusText";
+  	
+  	//Private members
+  	private TextView mTextStatus;
+  	private UntetheredBT mUntetheredBT = null;
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -123,16 +144,56 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
         setContentView(R.layout.face_detect_surface_view);
 
+        startStopBtn = (Button) findViewById(R.id.buttonStartStop);
+        startStopBtn.setText(R.string.START_APP_STRING);
+       
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.fd_activity_surface_view);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        
+        
     }
 
+    /**
+     * Opens Camera, opens bluetooth connection
+     * @param view
+     */
+    public void startStopAppOnClick(View view) {
+    	if((startStopBtn.getText().toString()).equals(getResources().getString(R.string.START_APP_STRING))) {
+    		mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+    		startStopBtn.setText(R.string.STOP_APP_STRING);
+    		
+    		//Bluetooth
+            mTextStatus.setText("Not Connected");
+        	
+        	//Create a new UntetheredBT object
+        	mUntetheredBT = new UntetheredBT(this, mHandler);
+        	
+        	//Start the UntetheredBT connection rolling.
+        	mUntetheredBT.start();
+    	}
+    	else {
+    		mOpenCvCameraView.setVisibility(SurfaceView.INVISIBLE);
+    		startStopBtn.setText(R.string.START_APP_STRING);
+    		//Stop the Bluetooth threads
+        	mUntetheredBT.stop();
+    	}
+    }
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	
+    	//may have to setup view
+    }
+    
     @Override
     public void onPause()
     {
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
         super.onPause();
+        
+        //Stop the Bluetooth threads
+    	mUntetheredBT.stop();
     }
 
     @Override
@@ -140,6 +201,15 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     {
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+        
+        //Bluetooth
+        mTextStatus.setText("Not Connected");
+    	
+    	//Create a new UntetheredBT object
+    	mUntetheredBT = new UntetheredBT(this, mHandler);
+    	
+    	//Start the UntetheredBT connection rolling.
+    	mUntetheredBT.start();
     }
 
     public void onDestroy() {
@@ -241,4 +311,54 @@ public class FdActivity extends Activity implements CvCameraViewListener {
             }
         }
     }
+    
+    /*****************************************************************************/
+    //Bluetooth
+    /*****************************************************************************/
+    
+    public void pressFront(View view)
+    {
+    	mUntetheredBT.sendCMD(UntetheredBT.FRONT_BUZZ);
+    }
+    
+    public void pressLeft(View view)
+    {
+    	mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
+    }
+    
+    public void pressRight(View view)
+    {
+    	mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
+    }
+    
+    public void pressBack(View view)
+    {
+    	mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
+    }
+    
+    public void pressNormal(View view)
+    {
+    	mUntetheredBT.sendCMD(UntetheredBT.NO_BUZZ);
+    }
+    
+    public void pressEmergency(View view)
+    {
+    	mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);
+    }
+    
+  	//Handler that retrieves information from the thread
+  	private final Handler mHandler = new Handler() {
+  		public void handleMessage(Message msg)
+  		{
+  			switch(msg.what)
+  			{
+  				case STATUS_NOT_CONNECTED:
+  					mTextStatus.setText("Not Connected");
+  					break;
+  				case STATUS_CONNECTED:
+  					mTextStatus.setText("Connected!");
+  					break;
+  			}
+  		}
+  	};
 }
