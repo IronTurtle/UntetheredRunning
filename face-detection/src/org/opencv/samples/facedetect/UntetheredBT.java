@@ -23,8 +23,8 @@ public class UntetheredBT {
 	public static final byte NO_BUZZ = 4;
 	public static final byte EMERGENCY_BUZZ = 5;
 	
-	private static final int BT_NOT_CONNECTED = 0;
-	private static final int BT_CONNECTED = 1;
+	public static final int BT_NOT_CONNECTED = 0;
+	public static final int BT_CONNECTED = 1;
 	
 	//Standard serial port UUID
 	private static final UUID UUID_SERIAL_PORT = 
@@ -118,6 +118,10 @@ public class UntetheredBT {
 		}
 		
 		uc.write(cmd);
+	}
+	
+	public synchronized int getBluetoothState() {
+		return mState;
 	}
 	
 	//Stop all threads

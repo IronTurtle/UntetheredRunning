@@ -11,6 +11,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -33,6 +34,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FdActivity extends Activity implements CvCameraViewListener {
 
@@ -41,23 +43,12 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public static final int        JAVA_DETECTOR       = 0;
     public static final int        NATIVE_DETECTOR     = 1;
 
-    private MenuItem               mItemFace50;
-    private MenuItem               mItemFace40;
-    private MenuItem               mItemFace30;
-    private MenuItem               mItemFace20;
-    private MenuItem               mItemType;
 
     private Mat                    mRgba;
     private Mat                    mGray;
     private File                   mCascadeFile;
     private CascadeClassifier      mJavaDetector;
-    private DetectionBasedTracker  mNativeDetector;
-
-    private int                    mDetectorType       = JAVA_DETECTOR;
     private String[]               mDetectorName;
-
-    private float                  mRelativeFaceSize   = 0.2f;
-    private int                    mAbsoluteFaceSize   = 0;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
     
@@ -72,7 +63,6 @@ public class FdActivity extends Activity implements CvCameraViewListener {
   	public static final String STATUS_TEXT = "statusText";
   	
   	//Private members
-  	private TextView mTextStatus;
   	private UntetheredBT mUntetheredBT = null;
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -105,10 +95,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
                         if (mJavaDetector.empty()) {
                             Log.e(TAG, "Failed to load cascade classifier");
                             mJavaDetector = null;
-                        } else
-                            Log.i(TAG, "Loaded cascade classifier from " + mCascadeFile.getAbsolutePath());
-
-                        mNativeDetector = new DetectionBasedTracker(mCascadeFile.getAbsolutePath(), 0);
+                        }
 
                         cascadeDir.delete();
 
@@ -130,7 +117,6 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public FdActivity() {
         mDetectorName = new String[2];
         mDetectorName[JAVA_DETECTOR] = "Java";
-        mDetectorName[NATIVE_DETECTOR] = "Native (tracking)";
 
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
@@ -140,10 +126,17 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
+        
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.face_detect_surface_view);
-
+        //Bluetooth
+    	//Create a new UntetheredBT object
+    	//mUntetheredBT = new UntetheredBT(this, mHandler);
+    	
+    	//Start the UntetheredBT connection rolling.
+    	//mUntetheredBT.start();
+    	
         startStopBtn = (Button) findViewById(R.id.buttonStartStop);
         startStopBtn.setText(R.string.START_APP_STRING);
        
@@ -158,26 +151,35 @@ public class FdActivity extends Activity implements CvCameraViewListener {
      * @param view
      */
     public void startStopAppOnClick(View view) {
+    	
     	if((startStopBtn.getText().toString()).equals(getResources().getString(R.string.START_APP_STRING))) {
     		mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
     		startStopBtn.setText(R.string.STOP_APP_STRING);
-    		
-    		//Bluetooth
-            mTextStatus.setText("Not Connected");
-        	
-        	//Create a new UntetheredBT object
-        	mUntetheredBT = new UntetheredBT(this, mHandler);
-        	
-        	//Start the UntetheredBT connection rolling.
-        	mUntetheredBT.start();
+        	/*if(mUntetheredBT.getBluetoothState() == UntetheredBT.BT_CONNECTED) {
+	        	mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+	    		startStopBtn.setText(R.string.STOP_APP_STRING);
+        	}
+        	else {
+        		//error
+        		Toast toast = Toast.makeText(getApplicationContext(), "Bluetooth Not Connected", Toast.LENGTH_SHORT);
+        		toast.show();
+        	}*/
     	}
     	else {
     		mOpenCvCameraView.setVisibility(SurfaceView.INVISIBLE);
     		startStopBtn.setText(R.string.START_APP_STRING);
-    		//Stop the Bluetooth threads
-        	mUntetheredBT.stop();
     	}
     }
+    
+    public void testBluetooth(View view) {
+    	
+    	setContentView(R.layout.activity_untethered);
+
+    }
+
+	public void urDetection(View view) {
+		setContentView(R.layout.face_detect_surface_view);
+	}
     
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	super.onActivityResult(requestCode, resultCode, data);
@@ -203,11 +205,8 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
         
         //Bluetooth
-        mTextStatus.setText("Not Connected");
-    	
     	//Create a new UntetheredBT object
     	mUntetheredBT = new UntetheredBT(this, mHandler);
-    	
     	//Start the UntetheredBT connection rolling.
     	mUntetheredBT.start();
     }
@@ -231,85 +230,57 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
         inputFrame.copyTo(mRgba);
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
+        
+        Point center = new Point(mGray.width()/2,mGray.height()/2);
+    	double angle = -90;
+    	double scale = 1.0;
 
-        if (mAbsoluteFaceSize == 0) {
-            int height = mGray.rows();
-            if (Math.round(height * mRelativeFaceSize) > 0) {
-                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
-                System.out.println("\nsize: " + mAbsoluteFaceSize);
-            }
-            mNativeDetector.setMinFaceSize(40);
-        }
+    	Mat mapMatrix = Imgproc.getRotationMatrix2D(center, angle, scale);
+    	
+    	Imgproc.warpAffine(mGray, mGray, mapMatrix, mGray.size(), Imgproc.INTER_LINEAR);
 
         MatOfRect faces = new MatOfRect();
 
-        if (mDetectorType == JAVA_DETECTOR) {
-            if (mJavaDetector != null)
-                mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
-                        new Size(40, 40), new Size());
-        }
-        else if (mDetectorType == NATIVE_DETECTOR) {
-            if (mNativeDetector != null)
-                mNativeDetector.detect(mGray, faces);
-        }
-        else {
-            Log.e(TAG, "Detection method is not selected!");
-        }
+        if (mJavaDetector != null)
+           mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+            new Size(20, 20), new Size());
 
         Rect[] facesArray = faces.toArray();
-        for (int i = 0; i < facesArray.length; i++)
-            Core.rectangle(mRgba, facesArray[0].tl(), facesArray[0].br(), FACE_RECT_COLOR, 3);
+        //int middle = mGray.width() / 2;
+        int threshold = 5;
+        
+       // Log.i(TAG, Integer.valueOf(mGray.width()).toString());
+        
+        
+        
+        if (facesArray.length > 0) {
+        	Point leftBound = new Point(facesArray[0].width + threshold, 0);
+            Point rightBound = new Point(mGray.width() - facesArray[0].width - threshold, 0);
+            Core.line(mGray, leftBound, new Point(facesArray[0].width + threshold, mGray.height()), FACE_RECT_COLOR, 3);
+            Core.line(mGray, rightBound, new Point(mGray.width() - facesArray[0].width - threshold, mGray.height()), FACE_RECT_COLOR, 3);
+           Core.rectangle(mGray, facesArray[0].tl(), facesArray[0].br(), FACE_RECT_COLOR, 3);
 
-        return mRgba;
+           if (facesArray[0].tl().x <= leftBound.x) {
+               mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
+           }
+           else if (facesArray[0].br().x >= rightBound.x) {
+               mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
+           }
+           else {
+        	   mUntetheredBT.sendCMD(UntetheredBT.NO_BUZZ);
+           }
+        }
+        return mGray;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "called onCreateOptionsMenu");
-        mItemFace50 = menu.add("Face size 50%");
-        mItemFace40 = menu.add("Face size 40%");
-        mItemFace30 = menu.add("Face size 30%");
-        mItemFace20 = menu.add("Face size 20%");
-        mItemType   = menu.add(mDetectorName[mDetectorType]);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
-        if (item == mItemFace50)
-            setMinFaceSize(0.5f);
-        else if (item == mItemFace40)
-            setMinFaceSize(0.4f);
-        else if (item == mItemFace30)
-            setMinFaceSize(0.3f);
-        else if (item == mItemFace20)
-            setMinFaceSize(0.2f);
-        else if (item == mItemType) {
-            mDetectorType = (mDetectorType + 1) % mDetectorName.length;
-            item.setTitle(mDetectorName[mDetectorType]);
-            setDetectorType(mDetectorType);
-        }
         return true;
-    }
-
-    private void setMinFaceSize(float faceSize) {
-        mRelativeFaceSize = faceSize;
-        mAbsoluteFaceSize = 0;
-    }
-
-    private void setDetectorType(int type) {
-        if (mDetectorType != type) {
-            mDetectorType = type;
-
-            if (type == NATIVE_DETECTOR) {
-                Log.i(TAG, "Detection Based Tracker enabled");
-                mNativeDetector.start();
-            } else {
-                Log.i(TAG, "Cascade detector enabled");
-                mNativeDetector.stop();
-            }
-        }
     }
     
     /*****************************************************************************/
@@ -353,10 +324,10 @@ public class FdActivity extends Activity implements CvCameraViewListener {
   			switch(msg.what)
   			{
   				case STATUS_NOT_CONNECTED:
-  					mTextStatus.setText("Not Connected");
+  					//mTextStatus.setText("Not Connected");
   					break;
   				case STATUS_CONNECTED:
-  					mTextStatus.setText("Connected!");
+  					//mTextStatus.setText("Connected!");
   					break;
   			}
   		}

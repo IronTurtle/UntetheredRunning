@@ -27,10 +27,10 @@
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.303359177" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.373249505" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../sdk/native/jni/include&quot;"/>
 									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-9/arch-arm/usr/include"/>
 									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include"/>
 									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/libs/armeabi-v7a/include"/>
+									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/OpenCV.mk"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.1424359063" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ANDROID=1"/>
@@ -39,10 +39,10 @@
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1156172258" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.149918263" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../sdk/native/jni/include&quot;"/>
 									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-9/arch-arm/usr/include"/>
 									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include"/>
 									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/libs/armeabi-v7a/include"/>
+									<listOptionValue builtIn="false" value="/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/OpenCV.mk"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.719752707" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ANDROID=1"/>

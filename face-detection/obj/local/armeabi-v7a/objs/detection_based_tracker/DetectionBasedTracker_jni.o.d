@@ -1,8 +1,8 @@
 obj/local/armeabi-v7a/objs/detection_based_tracker/DetectionBasedTracker_jni.o: \
  jni/DetectionBasedTracker_jni.cpp jni/DetectionBasedTracker_jni.h \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/jni.h \
- ../../sdk/native/jni/include/opencv2/core/core.hpp \
- ../../sdk/native/jni/include/opencv2/core/types_c.h \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/core.hpp \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/types_c.h \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/assert.h \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/sys/cdefs.h \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/sys/cdefs_elf.h \
@@ -33,18 +33,18 @@ obj/local/armeabi-v7a/objs/detection_based_tracker/DetectionBasedTracker_jni.o: 
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/machine/limits.h \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/sys/syslimits.h \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/asm/page.h \
- ../../sdk/native/jni/include/opencv2/core/version.hpp \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/version.hpp \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/algorithm \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/cmath \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/cstddef \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/complex \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/map \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/vector \
- ../../sdk/native/jni/include/opencv2/core/operations.hpp \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/operations.hpp \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/limits \
- ../../sdk/native/jni/include/opencv2/core/mat.hpp \
- ../../sdk/native/jni/include/opencv2/contrib/detection_based_tracker.hpp \
- ../../sdk/native/jni/include/opencv2/objdetect/objdetect.hpp \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/mat.hpp \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/contrib/detection_based_tracker.hpp \
+ /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/objdetect/objdetect.hpp \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/deque \
  /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/android/log.h
 
@@ -52,9 +52,9 @@ jni/DetectionBasedTracker_jni.h:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/jni.h:
 
-../../sdk/native/jni/include/opencv2/core/core.hpp:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/core.hpp:
 
-../../sdk/native/jni/include/opencv2/core/types_c.h:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/types_c.h:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/assert.h:
 
@@ -116,7 +116,7 @@ jni/DetectionBasedTracker_jni.h:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/platforms/android-8/arch-arm/usr/include/asm/page.h:
 
-../../sdk/native/jni/include/opencv2/core/version.hpp:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/version.hpp:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/algorithm:
 
@@ -130,15 +130,15 @@ jni/DetectionBasedTracker_jni.h:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/vector:
 
-../../sdk/native/jni/include/opencv2/core/operations.hpp:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/operations.hpp:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/limits:
 
-../../sdk/native/jni/include/opencv2/core/mat.hpp:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/core/mat.hpp:
 
-../../sdk/native/jni/include/opencv2/contrib/detection_based_tracker.hpp:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/contrib/detection_based_tracker.hpp:
 
-../../sdk/native/jni/include/opencv2/objdetect/objdetect.hpp:
+/Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/Documents/OpenCV4Android/OpenCV-2.4.3.2-android-sdk/sdk/native/jni/include/opencv2/objdetect/objdetect.hpp:
 
 /Volumes/500.11-GB-APPLE-HDD-TOSHIBA-MK5065GSXF-Media/Users/chai/android-ndk-r8d/sources/cxx-stl/gnu-libstdc++/4.6/include/deque:
 
