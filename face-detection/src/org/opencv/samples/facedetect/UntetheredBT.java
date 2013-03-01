@@ -26,6 +26,9 @@ public class UntetheredBT {
 	public static final int BT_NOT_CONNECTED = 0;
 	public static final int BT_CONNECTED = 1;
 	
+	//The timeout that indicates if the bluetooth connection died
+	private static final int CMD_TIMEOUT = 10;
+	
 	//Standard serial port UUID
 	private static final UUID UUID_SERIAL_PORT = 
 			UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -268,7 +271,7 @@ public class UntetheredBT {
 						while(mAppRunning)
 						{
 							//This loop waits until either data is available or a timeout occurs
-							while(mmInputStream.available() == 0 && timer < 5)
+							while(mmInputStream.available() == 0 && timer < CMD_TIMEOUT)
 							{
 								try {
 									Thread.sleep(100);
@@ -280,7 +283,7 @@ public class UntetheredBT {
 							}
 								
 							//A timeout occurred, close the socket and try to find the device
-							if(timer >= 5)
+							if(timer >= CMD_TIMEOUT)
 							{
 								mmSocket.close();
 								retryConnection();
