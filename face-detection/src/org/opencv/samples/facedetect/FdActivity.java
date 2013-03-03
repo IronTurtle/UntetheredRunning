@@ -244,11 +244,13 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
         //Detector detects logo in frame
         if (mJavaDetector != null)
-           mJavaDetector.detectMultiScale(mGray, logo, 1.01, 1, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+           mJavaDetector.detectMultiScale(mGray, logo, 1.05, 3, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
             new Size(20, 20), new Size());
 
         Rect[] logoArray = logo.toArray();
         //int middle = mGray.width() / 2;
+        
+        //Draw and create bounding box
         int threshold = 75;
         Point leftBound = new Point(threshold, 0);
         Point rightBound = new Point(mGray.width() - threshold, 0);
@@ -259,26 +261,33 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         
         if (logoArray.length > 0) {
           
-        	Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
            Core.rectangle(mGray, logoArray[0].tl(), logoArray[0].br(), FACE_RECT_COLOR, 3);
 
-           //4 1/2 ft
+           //4 1/2 ft too far back
            if (logoArray[0].width <= 27) {
-               mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
-           }
-           //3 1/2 ft
-           else if (logoArray[0].width >= 35) {
                mUntetheredBT.sendCMD(UntetheredBT.FRONT_BUZZ);
            }
+           //3 1/2 ft too far forward
+           else if (logoArray[0].width >= 40) {
+               mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
+           }
+           //move left
            else if (logoArray[0].tl().x <= leftBound.x) {
         	   mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
            }
+           //move right
            else if (logoArray[0].br().x >= rightBound.x) {
         	   mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
            }
+           //good position
            else {
         	   mUntetheredBT.sendCMD(UntetheredBT.NO_BUZZ);
            }
+        }
+        //image cannot be found for x secs, emergency stop
+        else {
+        	//mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);	
         }
         return mGray;
     }
