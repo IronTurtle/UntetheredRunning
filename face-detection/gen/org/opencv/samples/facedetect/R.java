@@ -62,6 +62,7 @@ containing a value of this type.
     public static final class raw {
         public static final int classifierwallclock=0x7f040000;
         public static final int lbpcascade_frontalface=0x7f040001;
+        public static final int untetheredlogo=0x7f040002;
     }
     public static final class string {
         public static final int START_APP_STRING=0x7f060001;

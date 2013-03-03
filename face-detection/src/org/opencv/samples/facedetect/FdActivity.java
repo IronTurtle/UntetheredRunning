@@ -78,9 +78,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
                     try {
                         // load cascade file from application resources
-                        InputStream is = getResources().openRawResource(R.raw.classifierwallclock);
+                        InputStream is = getResources().openRawResource(R.raw.untetheredlogo);
                         File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-                        mCascadeFile = new File(cascadeDir, "classifierwallclock.xml");
+                        mCascadeFile = new File(cascadeDir, "untetheredlogo.xml");
                         FileOutputStream os = new FileOutputStream(mCascadeFile);
 
                         byte[] buffer = new byte[4096];
@@ -228,43 +228,53 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
     public Mat onCameraFrame(Mat inputFrame) {
 
+    	//Copy input frame from camera into mat
         inputFrame.copyTo(mRgba);
+        //Convert image to grayscale
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
         
+        //Rotate image to portrait before given to detector
         Point center = new Point(mGray.width()/2,mGray.height()/2);
     	double angle = -90;
     	double scale = 1.0;
-
     	Mat mapMatrix = Imgproc.getRotationMatrix2D(center, angle, scale);
-    	
     	Imgproc.warpAffine(mGray, mGray, mapMatrix, mGray.size(), Imgproc.INTER_LINEAR);
 
-        MatOfRect faces = new MatOfRect();
+        MatOfRect logo = new MatOfRect();
 
+        //Detector detects logo in frame
         if (mJavaDetector != null)
-           mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+           mJavaDetector.detectMultiScale(mGray, logo, 1.01, 1, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
             new Size(20, 20), new Size());
 
-        Rect[] facesArray = faces.toArray();
+        Rect[] logoArray = logo.toArray();
         //int middle = mGray.width() / 2;
-        int threshold = 5;
+        int threshold = 75;
+        Point leftBound = new Point(threshold, 0);
+        Point rightBound = new Point(mGray.width() - threshold, 0);
+        Core.line(mGray, leftBound, new Point(threshold, mGray.height()), FACE_RECT_COLOR, 3);
+        Core.line(mGray, rightBound, new Point(mGray.width() - threshold, mGray.height()), FACE_RECT_COLOR, 3);
         
        // Log.i(TAG, Integer.valueOf(mGray.width()).toString());
         
-        
-        
-        if (facesArray.length > 0) {
-        	Point leftBound = new Point(facesArray[0].width + threshold, 0);
-            Point rightBound = new Point(mGray.width() - facesArray[0].width - threshold, 0);
-            Core.line(mGray, leftBound, new Point(facesArray[0].width + threshold, mGray.height()), FACE_RECT_COLOR, 3);
-            Core.line(mGray, rightBound, new Point(mGray.width() - facesArray[0].width - threshold, mGray.height()), FACE_RECT_COLOR, 3);
-           Core.rectangle(mGray, facesArray[0].tl(), facesArray[0].br(), FACE_RECT_COLOR, 3);
+        if (logoArray.length > 0) {
+          
+        	Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           Core.rectangle(mGray, logoArray[0].tl(), logoArray[0].br(), FACE_RECT_COLOR, 3);
 
-           if (facesArray[0].tl().x <= leftBound.x) {
-               mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
+           //4 1/2 ft
+           if (logoArray[0].width <= 27) {
+               mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
            }
-           else if (facesArray[0].br().x >= rightBound.x) {
-               mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
+           //3 1/2 ft
+           else if (logoArray[0].width >= 35) {
+               mUntetheredBT.sendCMD(UntetheredBT.FRONT_BUZZ);
+           }
+           else if (logoArray[0].tl().x <= leftBound.x) {
+        	   mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
+           }
+           else if (logoArray[0].br().x >= rightBound.x) {
+        	   mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
            }
            else {
         	   mUntetheredBT.sendCMD(UntetheredBT.NO_BUZZ);
