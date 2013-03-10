@@ -60,11 +60,19 @@ containing a value of this type.
         public static final int face_detect_surface_view=0x7f030001;
     }
     public static final class raw {
-        public static final int classifierwallclock=0x7f040000;
-        public static final int explosion=0x7f040001;
-        public static final int lbpcascade_frontalface=0x7f040002;
-        public static final int untetheredlogo=0x7f040003;
-        public static final int untetheredlogorectangle=0x7f040004;
+        public static final int backbuzz=0x7f040000;
+        public static final int bluetoothconnected=0x7f040001;
+        public static final int classifierwallclock=0x7f040002;
+        public static final int danger=0x7f040003;
+        public static final int explosion=0x7f040004;
+        public static final int frontbuzz=0x7f040005;
+        public static final int lbpcascade_frontalface=0x7f040006;
+        public static final int leftbuzz=0x7f040007;
+        public static final int rightbuzz=0x7f040008;
+        public static final int untetheredhighdef=0x7f040009;
+        public static final int untetheredlogo=0x7f04000a;
+        public static final int untetheredlogorectangle=0x7f04000b;
+        public static final int untetheredlogosquarebig=0x7f04000c;
     }
     public static final class string {
         public static final int START_APP_STRING=0x7f060001;

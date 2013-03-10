@@ -41,10 +41,14 @@ import android.widget.Toast;
 public class FdActivity extends Activity implements CvCameraViewListener {
 
     private static final String    TAG                 = "OCVSample::Activity";
-    private static final Scalar    FACE_RECT_COLOR     = new Scalar(0, 255, 0, 255);
+    private static final Scalar    FACE_RECT_COLOR     = new Scalar(255, 0, 0);
     public static final int        JAVA_DETECTOR       = 0;
 
     private int                    flag = 0;
+    private MediaPlayer			   mp = null;
+    private int					   threadRunning = 0;
+    private int 				   mEmergency = 0;
+    private boolean                mAppRunning = true;
     private Mat                    mRgba;
     private Mat                    mGray;
     private File                   mCascadeFile;
@@ -58,6 +62,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     //Msg types that get sent back to the UI from the separate thread Handler
   	public static final int STATUS_NOT_CONNECTED = 0;
   	public static final int STATUS_CONNECTED = 1;
+  	
+  	//Amount of time before emergency TIME_OUT*100ms = x seconds
+  	private static final int TIME_OUT = 20;
   	
   	//key to be used by the handler
   	public static final String STATUS_TEXT = "statusText";
@@ -78,9 +85,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
                     try {
                         // load cascade file from application resources
-                        InputStream is = getResources().openRawResource(R.raw.untetheredlogorectangle);
+                        InputStream is = getResources().openRawResource(R.raw.untetheredhighdef);
                         File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-                        mCascadeFile = new File(cascadeDir, "untetheredlogorectangle.xml");
+                        mCascadeFile = new File(cascadeDir, "untetheredhighdef.xml");
                         FileOutputStream os = new FileOutputStream(mCascadeFile);
 
                         byte[] buffer = new byte[4096];
@@ -130,12 +137,6 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.face_detect_surface_view);
-        //Bluetooth
-    	//Create a new UntetheredBT object
-    	//mUntetheredBT = new UntetheredBT(this, mHandler);
-    	
-    	//Start the UntetheredBT connection rolling.
-    	//mUntetheredBT.start();
     	
         startStopBtn = (Button) findViewById(R.id.buttonStartStop);
         startStopBtn.setText(R.string.START_APP_STRING);
@@ -159,7 +160,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
         	while(true) {
         		if(mUntetheredBT.getBluetoothState() == UntetheredBT.BT_CONNECTED) {
-            		MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.explosion);
+            		mp = MediaPlayer.create(getApplicationContext(), R.raw.bluetoothconnected);
             	    mp.start();
             	    //mp.release();
             	    break;
@@ -207,6 +208,8 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         
         //Stop the Bluetooth threads
     	mUntetheredBT.stop();
+    	mAppRunning = false;
+    	mp.release();
     }
 
     @Override
@@ -221,11 +224,13 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     	mUntetheredBT = new UntetheredBT(this, mHandler);
     	//Start the UntetheredBT connection rolling.
     	mUntetheredBT.start();
+    	mAppRunning = true;
     }
 
     public void onDestroy() {
         super.onDestroy();
         mOpenCvCameraView.disableView();
+        mp.release();
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -236,15 +241,16 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public void onCameraViewStopped() {
         mGray.release();
         mRgba.release();
+        mp.release();
     }
 
-    public Mat onCameraFrame(Mat inputFrame) {
+    public synchronized Mat onCameraFrame(Mat inputFrame) {   	
     	
     	if(mUntetheredBT.getBluetoothState() == UntetheredBT.BT_NOT_CONNECTED) {
     		flag = 1;
     	}
     	else if (mUntetheredBT.getBluetoothState() == UntetheredBT.BT_CONNECTED && flag == 1) {
-    		MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.explosion);
+    		mp = MediaPlayer.create(getApplicationContext(), R.raw.bluetoothconnected);
     	    mp.start();
     	    flag = 0;
     	    //mp.release();
@@ -266,41 +272,59 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
         //Detector detects logo in frame
         if (mJavaDetector != null)
-           mJavaDetector.detectMultiScale(mGray, logo, 1.01, 3, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+           mJavaDetector.detectMultiScale(mGray, logo, 1.03, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
             new Size(40, 40), new Size());
 
         Rect[] logoArray = logo.toArray();
         //int middle = mGray.width() / 2;
         
-        //Draw and create bounding box
-        int threshold = 55;
-        Point leftBound = new Point(threshold, 0);
-        Point rightBound = new Point(mGray.width() - threshold, 0);
-        Core.line(mGray, leftBound, new Point(threshold, mGray.height()), FACE_RECT_COLOR, 3);
-        Core.line(mGray, rightBound, new Point(mGray.width() - threshold, mGray.height()), FACE_RECT_COLOR, 3);
+        
+        
         
        // Log.i(TAG, Integer.valueOf(mGray.width()).toString());
-        Log.i(TAG, Integer.valueOf(mGray.width()).toString());
+        //Log.i(TAG, Integer.valueOf(mGray.width()).toString());
         if (logoArray.length > 0) {
-          
+        	
+          mEmergency = 0;
+          /*
            Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
+           */
+        	
+           //Draw and create bounding box
+           double threshold = 120 - ((logoArray[0].width * 0.5) + 30);
+           Point leftBound = new Point(threshold, 0);
+           Point rightBound = new Point(mGray.width() - threshold, 0);
+           Core.line(mGray, leftBound, new Point(threshold, mGray.height()), FACE_RECT_COLOR, 3);
+           Core.line(mGray, rightBound, new Point(mGray.width() - threshold, mGray.height()), FACE_RECT_COLOR, 3);
            Core.rectangle(mGray, logoArray[0].tl(), logoArray[0].br(), FACE_RECT_COLOR, 3);
-
-           //7 ft too far back
-           if (logoArray[0].width <= 55) {
+           
+           //4 1/2 ft too far back go forward
+           if (logoArray[0].width <= 52) {
                mUntetheredBT.sendCMD(UntetheredBT.FRONT_BUZZ);
+               mp = MediaPlayer.create(getApplicationContext(), R.raw.frontbuzz);
+       	       mp.start();
            }
-           //3 ft too far forward
-           else if (logoArray[0].width >= 125) {
+           //2 1/2 ft too close go backward
+           else if (logoArray[0].width >= 100) {
                mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
+               mp = MediaPlayer.create(getApplicationContext(), R.raw.backbuzz);
+       	       mp.start();
            }
            //move left
            else if (logoArray[0].tl().x <= leftBound.x) {
         	   mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
+        	   mp = MediaPlayer.create(getApplicationContext(), R.raw.leftbuzz);
+       	       mp.start();
            }
            //move right
            else if (logoArray[0].br().x >= rightBound.x) {
         	   mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
+        	   mp = MediaPlayer.create(getApplicationContext(), R.raw.rightbuzz);
+       	       mp.start();
            }
            //good position
            else {
@@ -309,8 +333,35 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         }
         //image cannot be found for x seconds, emergency stop
         else {
-        	//mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);	
-        	mUntetheredBT.sendCMD(UntetheredBT.NO_BUZZ);
+        	//mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);
+        	mEmergency = 1;
+        	if (threadRunning == 0) {
+        		(new Thread() 
+        		{
+        			public synchronized void run()
+        			{
+        				int timer = 0;
+        				while(mEmergency == 1 && mAppRunning) {
+        					try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+        					timer++;
+        					//Not the best option should fix
+        					if (timer == TIME_OUT) {       						
+        						mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);
+        						mp = MediaPlayer.create(getApplicationContext(), R.raw.danger);
+        			       	    mp.start();
+        						timer = TIME_OUT;        						
+        					}
+        				}
+        				threadRunning = 0;
+        			}
+        		}).start();
+        		threadRunning = 1;
+        	}
         }
         return mGray;
     }
