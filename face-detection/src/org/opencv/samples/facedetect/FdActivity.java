@@ -45,7 +45,8 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public static final int        JAVA_DETECTOR       = 0;
 
     private int                    flag = 0;
-    private MediaPlayer			   mp = null;
+    private float 				   volume = 0.3f;
+    private MediaPlayer			   mp = new MediaPlayer();
     private int					   threadRunning = 0;
     private int 				   mEmergency = 0;
     private boolean                mAppRunning = true;
@@ -142,9 +143,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         startStopBtn.setText(R.string.START_APP_STRING);
        
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.fd_activity_surface_view);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        
-        
+        mOpenCvCameraView.setCvCameraViewListener(this);      
     }
 
     /**
@@ -161,6 +160,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         	while(true) {
         		if(mUntetheredBT.getBluetoothState() == UntetheredBT.BT_CONNECTED) {
             		mp = MediaPlayer.create(getApplicationContext(), R.raw.bluetoothconnected);
+            		mp.setVolume(volume, volume);  
             	    mp.start();
             	    //mp.release();
             	    break;
@@ -209,7 +209,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         //Stop the Bluetooth threads
     	mUntetheredBT.stop();
     	mAppRunning = false;
-    	mp.release();
+    	if (!mp.equals(null)){
+    	   mp.release();
+    	}
     }
 
     @Override
@@ -230,7 +232,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public void onDestroy() {
         super.onDestroy();
         mOpenCvCameraView.disableView();
-        mp.release();
+        if (!mp.equals(null)){
+     	   mp.release();
+     	}
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -241,7 +245,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     public void onCameraViewStopped() {
         mGray.release();
         mRgba.release();
-        mp.release();
+        if (!mp.equals(null)){
+     	   mp.release();
+     	}
     }
 
     public synchronized Mat onCameraFrame(Mat inputFrame) {   	
@@ -251,6 +257,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     	}
     	else if (mUntetheredBT.getBluetoothState() == UntetheredBT.BT_CONNECTED && flag == 1) {
     		mp = MediaPlayer.create(getApplicationContext(), R.raw.bluetoothconnected);
+    		mp.setVolume(volume, volume);
     	    mp.start();
     	    flag = 0;
     	    //mp.release();
@@ -302,28 +309,36 @@ public class FdActivity extends Activity implements CvCameraViewListener {
            Core.line(mGray, rightBound, new Point(mGray.width() - threshold, mGray.height()), FACE_RECT_COLOR, 3);
            Core.rectangle(mGray, logoArray[0].tl(), logoArray[0].br(), FACE_RECT_COLOR, 3);
            
+           if (!mp.equals(null)){
+         	   mp.release();
+           }
+           
            //4 1/2 ft too far back go forward
            if (logoArray[0].width <= 52) {
                mUntetheredBT.sendCMD(UntetheredBT.FRONT_BUZZ);
                mp = MediaPlayer.create(getApplicationContext(), R.raw.frontbuzz);
+               mp.setVolume(volume, volume);
        	       mp.start();
            }
            //2 1/2 ft too close go backward
            else if (logoArray[0].width >= 100) {
                mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
                mp = MediaPlayer.create(getApplicationContext(), R.raw.backbuzz);
+               mp.setVolume(volume, volume);
        	       mp.start();
            }
            //move left
            else if (logoArray[0].tl().x <= leftBound.x) {
         	   mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
         	   mp = MediaPlayer.create(getApplicationContext(), R.raw.leftbuzz);
+        	   mp.setVolume(volume, volume);
        	       mp.start();
            }
            //move right
            else if (logoArray[0].br().x >= rightBound.x) {
         	   mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
         	   mp = MediaPlayer.create(getApplicationContext(), R.raw.rightbuzz);
+        	   mp.setVolume(volume, volume);
        	       mp.start();
            }
            //good position
@@ -353,6 +368,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
         					if (timer == TIME_OUT) {       						
         						mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);
         						mp = MediaPlayer.create(getApplicationContext(), R.raw.danger);
+        						mp.setVolume(volume, volume);
         			       	    mp.start();
         						timer = TIME_OUT;        						
         					}
