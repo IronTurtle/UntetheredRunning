@@ -1,5 +1,6 @@
 package org.opencv.samples.facedetect;
 
+//Sets up receiver that starts the App when the phone is unlocked
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
