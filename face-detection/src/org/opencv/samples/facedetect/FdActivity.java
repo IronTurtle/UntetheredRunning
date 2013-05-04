@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//Primary activity that executes cascade algorithm.
 public class FdActivity extends Activity implements CvCameraViewListener {
 
     private static final String    TAG                 = "OCVSample::Activity";
@@ -65,7 +66,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
   	public static final int STATUS_CONNECTED = 1;
   	
   	//Amount of time before emergency TIME_OUT*100ms = x seconds
-  	private static final int TIME_OUT = 20;
+  	private static final int TIME_OUT = 30;
   	
   	//key to be used by the handler
   	public static final String STATUS_TEXT = "statusText";
@@ -73,6 +74,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
   	//Private members
   	private UntetheredBT mUntetheredBT = null;
 
+  	//Initialize cascader and OpenCV manager on the phone.
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -130,6 +132,7 @@ public class FdActivity extends Activity implements CvCameraViewListener {
     }
 
     /** Called when the activity is first created. */
+    //Initializes the Start/Stop UI
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
@@ -152,13 +155,16 @@ public class FdActivity extends Activity implements CvCameraViewListener {
      */
     public void startStopAppOnClick(View view) {
     	
+    	//If the Start/Stop button is pressed change it to the opposite state
     	if((startStopBtn.getText().toString()).equals(getResources().getString(R.string.START_APP_STRING))) {
 
     		mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
     		startStopBtn.setText(R.string.STOP_APP_STRING);
 
+    		//If start pressed, open bluetooth connection
         	while(true) {
         		if(mUntetheredBT.getBluetoothState() == UntetheredBT.BT_CONNECTED) {
+        			//Play "bluetooth connected" sound clip
             		mp = MediaPlayer.create(getApplicationContext(), R.raw.bluetoothconnected);
             		mp.setVolume(volume, volume);  
             	    mp.start();
@@ -250,8 +256,10 @@ public class FdActivity extends Activity implements CvCameraViewListener {
      	}
     }
 
+    //Primary camera operation
     public synchronized Mat onCameraFrame(Mat inputFrame) {   	
     	
+    	//If bluetooth is disconnected during use, replays "bluetooth connected" sound clip after reconnecting
     	if(mUntetheredBT.getBluetoothState() == UntetheredBT.BT_NOT_CONNECTED) {
     		flag = 1;
     	}
@@ -279,63 +287,62 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 
         //Detector detects logo in frame
         if (mJavaDetector != null)
-           mJavaDetector.detectMultiScale(mGray, logo, 1.03, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
+           mJavaDetector.detectMultiScale(mGray, logo, 1.01, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
             new Size(40, 40), new Size());
 
         Rect[] logoArray = logo.toArray();
-        //int middle = mGray.width() / 2;
-        
-        
-        
-        
-       // Log.i(TAG, Integer.valueOf(mGray.width()).toString());
         //Log.i(TAG, Integer.valueOf(mGray.width()).toString());
+        //If logo was found, compare to the bounding box
         if (logoArray.length > 0) {
         	
           mEmergency = 0;
           /*
            Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
-           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
-           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
-           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
-           Log.i(TAG, Integer.valueOf(logoArray[0].width).toString());
            */
         	
            //Draw and create bounding box
-           double threshold = 120 - ((logoArray[0].width * 0.5) + 30);
-           Point leftBound = new Point(threshold, 0);
-           Point rightBound = new Point(mGray.width() - threshold, 0);
+           //120 is width of camera view based on current size of camera preview, this width will change if you change camera preview
+           //size
+          //left edge is 0, right edge is 120
+           //((logoArray[0].width * 0.5) + 30) subtracts off from width so can calculate size of the bound from the edge of view
+           double threshold = 120 - ((logoArray[0].width * 0.5) + 30); 
+           Point leftBound = new Point(threshold, 0); //30 from left edge of view, with current #s
+           Point rightBound = new Point(mGray.width() - threshold, 0); //30 from right edge of view, with current #s
            Core.line(mGray, leftBound, new Point(threshold, mGray.height()), FACE_RECT_COLOR, 3);
            Core.line(mGray, rightBound, new Point(mGray.width() - threshold, mGray.height()), FACE_RECT_COLOR, 3);
            Core.rectangle(mGray, logoArray[0].tl(), logoArray[0].br(), FACE_RECT_COLOR, 3);
            
            if (!mp.equals(null)){
-         	   mp.release();
+         	   //mp.release();
            }
            
            //4 1/2 ft too far back go forward
-           if (logoArray[0].width <= 52) {
+           if (logoArray[0].width <= 52) { //52 is the width of the logo at 4 1/2 ft, found through testing
+        	   //Sends buzz to front and plays "front" sound clip
                mUntetheredBT.sendCMD(UntetheredBT.FRONT_BUZZ);
                mp = MediaPlayer.create(getApplicationContext(), R.raw.frontbuzz);
                mp.setVolume(volume, volume);
        	       mp.start();
            }
            //2 1/2 ft too close go backward
-           else if (logoArray[0].width >= 100) {
+           else if (logoArray[0].width >= 100) { //100 is the width of the logo at 2 1/2 ft, found through testing
+        	 //Sends buzz to back and plays "back" sound clip
                mUntetheredBT.sendCMD(UntetheredBT.BACK_BUZZ);
                mp = MediaPlayer.create(getApplicationContext(), R.raw.backbuzz);
                mp.setVolume(volume, volume);
        	       mp.start();
            }
            //move left
-           else if (logoArray[0].tl().x <= leftBound.x) {
+           else if (logoArray[0].tl().x <= leftBound.x) { //if logo crosses to left of left bound, left feedback
+        	 //Sends buzz to left and plays "left" sound clip
         	   mUntetheredBT.sendCMD(UntetheredBT.LEFT_BUZZ);
         	   mp = MediaPlayer.create(getApplicationContext(), R.raw.leftbuzz);
         	   mp.setVolume(volume, volume);
        	       mp.start();
            }
            //move right
-           else if (logoArray[0].br().x >= rightBound.x) {
+           else if (logoArray[0].br().x >= rightBound.x) { //if logo crosses to right of right bound, right feedback
+        	 //Sends buzz to right and plays "right" sound clip
         	   mUntetheredBT.sendCMD(UntetheredBT.RIGHT_BUZZ);
         	   mp = MediaPlayer.create(getApplicationContext(), R.raw.rightbuzz);
         	   mp.setVolume(volume, volume);
@@ -364,8 +371,9 @@ public class FdActivity extends Activity implements CvCameraViewListener {
 								e.printStackTrace();
 							}
         					timer++;
-        					//Not the best option should fix
-        					if (timer == TIME_OUT) {       						
+        					//Not the best option should fix, probably shouldn't use the count like this
+        					if (timer == TIME_OUT) {       	
+        						//Buzzes all motors and plays "danger" sound clip
         						mUntetheredBT.sendCMD(UntetheredBT.EMERGENCY_BUZZ);
         						mp = MediaPlayer.create(getApplicationContext(), R.raw.danger);
         						mp.setVolume(volume, volume);
