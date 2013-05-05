@@ -117,12 +117,15 @@ public class UntetheredBT {
 		}
 		else
 		{
+			/*Make sure to turn the vibrator off*/
 			mVibrator.cancel();
 		}
 		
+		/*Write the command to the Arduino*/
 		uc.write(cmd);
 	}
 	
+	/*Get the current bluetooth state*/
 	public synchronized int getBluetoothState() {
 		return mState;
 	}
@@ -130,12 +133,14 @@ public class UntetheredBT {
 	//Stop all threads
 	public synchronized void stop()
 	{
+		/*Cancels the threads*/
 		if(mUntetheredThread != null)
 		{
 			mUntetheredThread.cancel();
 			mUntetheredThread = null;
 		}
 		
+		/*Set the app to be in the off state*/
 		synchronized (this)
 		{
 			mAppRunning = false;
@@ -143,6 +148,7 @@ public class UntetheredBT {
 		
 	}
 	
+	/*Inner thread class that handles the connection and data transfer over bluetooth*/
 	private class UntetheredConnection extends Thread 
 	{
 		private BluetoothAdapter mAdapter;
@@ -157,6 +163,7 @@ public class UntetheredBT {
 			mAdapter = btAdapter;
 		}
 		
+		/*This method starts the new thread*/
 		public void run()
 		{
 			//Get the untetheredBT device
@@ -191,6 +198,8 @@ public class UntetheredBT {
 			boolean btConnected = false;
 			
 				//Will try to get a connection, will loop until successful.
+				//The mAppRunning variable makes sure there are no zombie threads
+				//when the app closes
 				while (!btConnected && mAppRunning) {
 					try {
 						mmSocket = mmDevice
@@ -230,6 +239,7 @@ public class UntetheredBT {
 			}
 		}
 		
+		/*Handles closing the thread*/
 		public void cancel()
 		{
 			try 
@@ -242,6 +252,7 @@ public class UntetheredBT {
 			}
 		}
 		
+		/*Handles writing a command to the Arduino*/
 		public void write(final byte buffer)
 		{	
 			synchronized (this) 
